@@ -26,3 +26,41 @@
 
     return cardString+'.png';
   };
+
+  export async function getData(url) {
+    let result = await fetch(url, {
+      method: 'GET'
+    });
+    return await result.json();
+  };
+
+  export function getUrl(urlType , env = 'test') {
+    if(env === 'test'){
+      if(urlType === 'base'){
+        return "http://localhost:5001/1"
+      }else if(urlType === 'play'){
+        return "http://localhost:5001/play/1/"
+      }else if(urlType === 'continue'){
+        return "http://localhost:5001/continue/1/"
+      }else if(urlType === 'turn'){
+        return "http://localhost:5001/turn/1"
+      }else{
+        return ""
+      }
+
+    }else{
+      if(urlType === 'base'){
+        return "https://mytestpipeli-cardgame-cvlbnhhr.herokuapp.com/1"
+      }else if(urlType === 'play'){
+        return "https://mytestpipeli-cardgame-cvlbnhhr.herokuapp.com/play/1/"
+      }else if(urlType === 'onTable'){
+        return "https://mytestpipeli-cardgame-cvlbnhhr.herokuapp.com/onTableCard/1/"
+      }else if(urlType === 'turn'){
+        return "https://mytestpipeli-cardgame-cvlbnhhr.herokuapp.com/turn/1"
+      }else{
+        return ""
+      }
+
+    }
+
+  };

@@ -15,7 +15,21 @@ class Login extends Component {
     }
      handleSubmit (e) {
         e.preventDefault();
-        localStorage.setItem("player_id",this.state.username);
+        const game_id = 1;
+        let player_id;
+        if(this.state.password === '1'){
+            player_id = 'p1';
+        }else if(this.state.password === '2'){
+            player_id = 'p1';
+        }else if(this.state.password === '3'){
+            player_id = 'p1';
+        }else if (this.state.password === '4'){
+            player_id = 'p1';
+        }
+        localStorage.setItem("player_id",player_id);
+        localStorage.setItem("game_id","1");
+        localStorage.setItem("username",this.state.username);
+        
         this.setState({
             loggedIn:true
         })
@@ -23,7 +37,9 @@ class Login extends Component {
 
     render(){
         const player_id = localStorage.getItem("player_id");
-        if(player_id !== null){
+        const game_id = localStorage.getItem("player_id");
+
+        if(player_id !== null && game_id !==null){
             return <Redirect to="/play" />
         }
         return (
