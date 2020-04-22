@@ -1,19 +1,13 @@
-import React, {  useState, useEffect } from 'react';
+import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Row, Column, Col} from 'react-bootstrap';
-import { Container } from 'semantic-ui-react';
 import Login from './Containers/Login';
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
 import Dashboard from './Containers/Dashboard';
 
 const App = () => {
-
-
   return (
     <Router>
       <div>

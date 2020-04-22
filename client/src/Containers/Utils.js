@@ -34,33 +34,44 @@
     return await result.json();
   };
 
-  export function getUrl(urlType , env = 'test') {
-    if(env === 'test'){
-      if(urlType === 'base'){
-        return "http://localhost:5001/1"
-      }else if(urlType === 'play'){
-        return "http://localhost:5001/play/1/"
-      }else if(urlType === 'continue'){
-        return "http://localhost:5001/continue/1/"
-      }else if(urlType === 'turn'){
-        return "http://localhost:5001/turn/1"
-      }else{
-        return ""
-      }
-
-    }else{
-      if(urlType === 'base'){
-        return "https://mytestpipeli-cardgame-cvlbnhhr.herokuapp.com/1"
-      }else if(urlType === 'play'){
-        return "https://mytestpipeli-cardgame-cvlbnhhr.herokuapp.com/play/1/"
-      }else if(urlType === 'onTable'){
-        return "https://mytestpipeli-cardgame-cvlbnhhr.herokuapp.com/onTableCard/1/"
-      }else if(urlType === 'turn'){
-        return "https://mytestpipeli-cardgame-cvlbnhhr.herokuapp.com/turn/1"
-      }else{
-        return ""
-      }
-
-    }
-
+  export async function sendData(url , body) {
+    let result = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    return await result.json();
   };
+
+  export function getUrl(urlType , env = 'prod') {
+      var baseUrl ='';
+      if(env === 'test'){
+        baseUrl = 'http://localhost:5001/'
+      }else{
+        baseUrl = 'https://mytestpipeli-cardgame-5dk43cdv.herokuapp.com/'
+      }
+      
+      if(urlType === 'base'){
+        return baseUrl+"1"
+      }else if(urlType === 'play'){
+        return baseUrl+"play/1/"
+      }else if(urlType === 'continue'){
+        return baseUrl+"continue/1/"
+      }else if(urlType === 'turn'){
+        return "baseUrl"+"turn/1"
+      }else if(urlType == 'socketbase'){
+        return baseUrl
+      }
+      else{
+        return ""
+      }
+
+    };
+
+  export function toCamelCase(name) {
+
+    return name.charAt(0).toUpperCase() + name.slice(1)
+  }

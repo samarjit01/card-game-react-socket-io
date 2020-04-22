@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Component }  from 'react';
-import { Card, Button, Form  , Table} from 'react-bootstrap';
+import { Card, Button, Form  , Table , Image} from 'react-bootstrap';
 import PlayerCard from './PlayerCard';
 import NPlayingCard from './NPlayingCard';
 import { Redirect } from 'react-router-dom';
@@ -12,8 +12,14 @@ const Scoreboard = (props) =>  {
         const playerScores = props.scores;
         const playerUsername = props.usernames;
         const doContinue = props.doContinue;
+        const isActive = props.isActive;
         const breCount = props.breCount;
-    
+
+        var cardPassed = [];
+        cardPassed.push(props.cardPassed['p1'])
+        cardPassed.push(props.cardPassed['p2'])
+        cardPassed.push(props.cardPassed['p3'])
+        cardPassed.push(props.cardPassed['p4'])
 
         var scoreboardData = []; // create an empty array
         for(let i=0;i<4;i++){
@@ -22,6 +28,7 @@ const Scoreboard = (props) =>  {
                 score: playerScores[i],
                 bre: breCount[i]
             });
+
         }
         scoreboardData.sort(function(a, b) {
             return a.score > b.score;
@@ -54,7 +61,11 @@ const Scoreboard = (props) =>  {
                 </Table>
                 <br></br>
                 <div>
-                    {doContinue && doContinue.map(x => <Button variant={x?"success":"secondary"}> </Button>)}
+                 {cardPassed && cardPassed.map(x => <Button  variant={(x.length > 0)?"success":"secondary"}> </Button>)}  PASSED CARDS
+                            <br></br>
+                  {doContinue && doContinue.map(x => <Button  variant={x?"success":"secondary"}> </Button>)}  CONTINUE GAME
+                  <br></br>
+                  {isActive && isActive.map(x => <Button  variant={x?"success":"secondary"}> </Button>)}  ACTIVE PLAYERS
                 </div>
                 </div>
         );

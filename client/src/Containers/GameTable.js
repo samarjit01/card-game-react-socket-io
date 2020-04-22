@@ -6,9 +6,8 @@ var utils = require('./Utils')
 
 
 const GameTable = (props) =>  {
-        const player_id = localStorage.getItem("player_id");
         const onTable = props.onTableCardsData;
-        const username = props.PlayerUsername[player_id];
+        const username = props.PlayerUsername;
 
         return (
 
