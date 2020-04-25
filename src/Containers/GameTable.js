@@ -4,43 +4,45 @@ import NPlayingCard from './NPlayingCard';
 const GameTable = (props) =>  {
         const onTable = props.onTableCardsData;
         const username = props.PlayerUsername;
+        const suitCode = props.suitCode;
+
 
         return (
 
-            <div class="container ">
+            <div className="container ">
                   <br></br>
-            <div class="row">
-              <div class="col">
+            <div className="row">
+              <div className="col">
 
               </div>
-              <div class="col ">
+              <div className="col ">
               <NPlayingCard code={onTable[2]} PlayerUsername = {username[2]} />
               </div>
-              <div class="col">
+              <div className="col">
 
               </div>
             </div>
 
-            <div class="row">
-              <div class="col">
+            <div className="row">
+              <div className="col">
                  <NPlayingCard code={onTable[3]} PlayerUsername = {username[3]}/>
               </div>
-              <div class="col">
-
+              <div className="col">
+              <NPlayingCard code={suitCode+'.png'} PlayerUsername = {''} />
               </div>
-              <div class="col">
+              <div className="col">
               <NPlayingCard code={onTable[1]} PlayerUsername = {username[1]} />
               </div>
             </div>
 
-            <div class="row">
-              <div class="col">
+            <div className="row">
+              <div className="col">
 
               </div>
-              <div class="col">
+              <div className="col">
               <NPlayingCard code={onTable[0]} PlayerUsername = {username[0]}/>
               </div>
-              <div class="col">
+              <div className="col">
 
               </div>
             </div>

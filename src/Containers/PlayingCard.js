@@ -1,5 +1,5 @@
 import React, { useEffect, useState }  from 'react';
-import { Card, Button, Form } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 var utils = require('./Utils')
 
 const PlayingCard = (props) => {
@@ -9,7 +9,7 @@ const PlayingCard = (props) => {
     const imageUrl = utils.getCardString(props.code);
     const handleChange = (event) => {
 
-      props.onSubmit(event.target .value);
+    props.onSubmit(event.target .value);
       setToggle(!toggle)
     }
     useEffect(() => {
@@ -26,9 +26,9 @@ const PlayingCard = (props) => {
             <input type="checkbox"
 
               value={props.code}
-              style={{'margin-left': 65, 'position': 'absolute' , 'opacity':0}}
+              style={{marginLeft: 65, position: 'absolute' , opacity:0}}
               onChange={handleChange}/>
-            <Card.Img variant="top primary"  src={require('../img/' + `${imageUrl}`)} />
+            <Card.Img variant="top primary"  src={require('../img/' +imageUrl)} />
           </label>
         </Card>
       </div>

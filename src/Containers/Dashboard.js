@@ -4,6 +4,9 @@ import PlayerCard from './PlayerCard';
 
 var utils = require('./Utils')
 const base_url = utils.getUrl('base');
+const playerData_url = utils.getUrl('playerData');
+
+
 
 class Dashboard extends Component {
 
@@ -22,7 +25,7 @@ class Dashboard extends Component {
     }
 
     keyPress(e){
-      if(e.charCode == 13){
+      if(e.charCode === 13){
         this.addPlayer(this.state.username  , this.state.password);
         this.setState({username:'',password:'',playerId:''})
       }
@@ -31,18 +34,18 @@ class Dashboard extends Component {
 
     sendPassedData(user , pass , player_id) {
       let body =   {username: user , password: pass};
-      utils.sendData(base_url +"/"+ player_id,body ).then(data => !data.isSuccessful ? this.handleShow('Player is taken') : this.setToken(user  ,player_id));
+      utils.sendData(base_url +"/"+ player_id,body ).then(data => !data.isSuccessful ? this.handleShow('Player is taken') : this.setToken(user ,pass ,player_id));
     }
 
     addPlayer(user , pass){
       let player_id = '';
-        if(this.state.playerId == "1"){
+        if(this.state.playerId === "1"){
             player_id = 'p1';
-        }else if(this.state.playerId == "2"){
+        }else if(this.state.playerId === "2"){
             player_id = 'p2';
-        }else if(this.state.playerId == "3"){
+        }else if(this.state.playerId === "3"){
             player_id = 'p3';
-        }else if(this.state.playerId == "4"){
+        }else if(this.state.playerId === "4"){
             player_id = 'p4';
         }
         if(this.state.username !== '' && this.state.password !== '' && this.state.playerId !== ''){
@@ -53,24 +56,35 @@ class Dashboard extends Component {
         }
 
     }
+
+
+
      handleClose = () => {this.setState({show:false , showMsg:''})};
      handleShow = (msg) => {this.setState({show:true , showMsg:msg})};
-     setToken = (username , player_id) => {
+     setToken = (username , password , player_id) => {
         localStorage.setItem("player_id" , player_id);
         localStorage.setItem("game_id" , "1" );
         localStorage.setItem("username" , username);
+        localStorage.setItem("password" , password);
+
         this.setState({loggedIn:true});
-        window.location.reload();
+        // window.location.reload();
      };
 
      componentDidMount(){
+
         const player_id = localStorage.getItem("player_id");
         const game_id = localStorage.getItem("game_id");
         const username = localStorage.getItem("username");
+        const password = localStorage.getItem("password");
+
 
         if(player_id !== null && game_id !== null){
-          this.setState({loggedIn:true});
+          // this.setState({loggedIn:true});
         }
+
+
+
      }
 
 
@@ -82,6 +96,7 @@ class Dashboard extends Component {
       const player_id = localStorage.getItem("player_id");
       const game_id = localStorage.getItem("game_id");
       const username = localStorage.getItem("username");
+
 
 
         return (
@@ -134,7 +149,7 @@ class Dashboard extends Component {
               </div>
               <div className="row">
                 <div className="col">
-                { game_id &&
+                { game_id && this.state.loggedIn &&
                 <PlayerCard />
                 }
                 </div>

@@ -1,13 +1,13 @@
  export const getCardString = (code) => {
     var code = Number(code);
     var cardString ="";
-    if(code%13 == 11)
+    if(code%13===11)
      cardString+='jack'
-    else if(code%13 == 12)
+    else if(code%13===12)
      cardString+='queen'
-    else if(code%13 == 0)
+    else if(code%13 === 0)
      cardString+='king'
-    else if(code%13 == 1)
+    else if(code%13 === 1)
      cardString+='ace'
     else
      cardString+= String(code%13);
@@ -21,7 +21,7 @@
     else
       cardString += '_of_spades'
 
-    if(code == 0)
+    if(code === 0)
         cardString = 'red_joker'
 
     return cardString+'.png';
@@ -53,7 +53,7 @@
       }else{
         baseUrl = 'https://mytestpipeli-cardgame-5dk43cdv.herokuapp.com/'
       }
-      
+
       if(urlType === 'base'){
         return baseUrl+"1"
       }else if(urlType === 'play'){
@@ -62,8 +62,10 @@
         return baseUrl+"continue/1/"
       }else if(urlType === 'turn'){
         return "baseUrl"+"turn/1"
-      }else if(urlType == 'socketbase'){
+      }else if(urlType==='socketbase'){
         return baseUrl
+      }else if(urlType === 'playerData'){
+        return baseUrl+'showPlayers/1'
       }
       else{
         return ""

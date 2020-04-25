@@ -1,8 +1,12 @@
-import React, { useEffect, useState ,useCallback } from 'react';
+import React, { useEffect, useState  } from 'react';
 import PlayingCard from './PlayingCard';
 import {Row, Container, Button , Alert ,Modal } from 'react-bootstrap';
 import GameTable from './GameTable';
 import Scoreboard from './Scoreboard'
+import Messages from './Messages'
+import Input from './Input'
+
+
 
 import io from "socket.io-client";
 
@@ -13,33 +17,32 @@ const ENDPOINT = utils.getUrl('socketbase');
 
 let socket = io.connect(ENDPOINT)
 
+const base_url = utils.getUrl('base');
+const play_url = utils.getUrl('play');
+
 
 const PlayerCard = (props) => {
-  const base_url = utils.getUrl('base');
-  const play_url = utils.getUrl('play');
+
   const player_id = localStorage.getItem("player_id");
 
   const continue_url = utils.getUrl('continue');
 
 
   const [doRefresh, setDoRefresh] = useState(false);
-  const [playerCards, setPlayerCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
   const [isPassed, setIsPassed] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
-  const [isPlayed, setIsPlayed] = useState(false);
   const [playerTurn, setPlayerTurn] = useState('');
   const [suit, setSuit] = useState('');
-  const [onTable, setOnTable] = useState([0,0,0,0]);
-  const [playerUsernames, setPlayerUsernames] = useState({'p1':[],'p2':[],'p3':[],'p4':[]});
-  const [score, setScore] = useState('');
   const [doContinue, setDoContinue] = useState('');
   const [breCount, setBreCount] = useState('');
-  const [gameStatusData, setGameStatusData] = useState('');
   const [game , setGame] = useState('');
   const [stats , setStats] = useState(true);
   const [show, setShow] = useState(false);
   const [showMsg, setShowMsg] = useState('');
+
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
 
 
   const handleClose = () => {setShow(false);setShowMsg('')};
@@ -52,14 +55,22 @@ const PlayerCard = (props) => {
       console.log('from server : ',msg);
       setDoRefresh(msg.refresh);
     });
+    socket.on('message', message => {
+      setMessages(messages => [ ...messages, message ]);
+    });
 }
 
-  async function getData() {
-    let result = await fetch(base_url, {
-      method: 'GET'
-    });
-    return await result.json();
+
+const sendMessage = (event) => {
+  event.preventDefault();
+
+  if(message) {
+    let username = game && game.playerName[game.playerId[player_id]];
+    let data = {chatMsg : message , userName : username}
+    socket.emit('sendMessage', data, () => setMessage(''));
   }
+}
+
 
 
   async function sendPassedData() {
@@ -108,8 +119,9 @@ const PlayerCard = (props) => {
 
   };
   const RefreshAfterPlayCard = () => {
-    setIsPlayed(true)
-    utils.getData(base_url).then(data => setComponentData(data));
+
+      utils.getData(base_url).then(data => setComponentData(data));
+
   };
   const RefreshAfterPassCard = () => {
     setIsPassed(true)
@@ -119,17 +131,12 @@ const PlayerCard = (props) => {
 
 
   const setComponentData = (data) => {
-    setPlayerCards(data.game.gameState.cards[player_id]);
     setIsStarted(data.game.gameState.state === 'STARTED' );
     setIsPassed(data.game.gameState.cardPassed[player_id].length >0 || data.game.gameState.isCardPassed );
     setPlayerTurn(data.game.gameState.turn)
     setSuit(data.game.gameState.suit);
-    setOnTable(data.game.gameState.playerTableCards[player_id])
-    setPlayerUsernames(data.game.gameState.playerTableUsernames)
-    setScore(data.game.gameState.gameScores)
     setDoContinue(data.game.doStartNewGame)
     setBreCount(data.game.breCount)
-    setGameStatusData(data.game.gameState.state)
     setGame(data.game)
     setSelectedCards([])
 
@@ -138,6 +145,8 @@ const PlayerCard = (props) => {
   useEffect(() => {
     utils.getData(base_url).then(data => setComponentData(data));
     synchData();
+
+
   }, []);
 
   const sendPassedCards = (e) => {
@@ -148,8 +157,10 @@ const PlayerCard = (props) => {
 
 
   const sendPlayingCards = (e) => {
-    sendPlayedData().then(res => {setShowMsg(res.error);if(res.isSuccessful == false){handleShow()}else{RefreshAfterPlayCard();}});
-  };
+
+      sendPlayedData().then(res => {setShowMsg(res.error);if(res.isSuccessful === false){handleShow()}else{RefreshAfterPlayCard();}});
+
+    }
 
 
   const onSelect = (cardValue) => {
@@ -182,24 +193,15 @@ const PlayerCard = (props) => {
   return (
     <div>{doRefresh && Refresh()}
       <div className="row">
-      <div className="col">
-      { stats &&
-          <div>
-          <Alert  variant='dark'>
-                  GAME PLAYED :   { game && game.gamePlayed }
-          </Alert>
-          <Alert  variant='dark'>
-                   CURRENT SUIT :   { suit }
-          </Alert>
-          <Alert  variant='dark'>
-                   ROUND : {game && game.gameState.round}
-          </Alert>
-          <Alert  variant='dark'>
-                    GAME STATE : {game && game.gameState.state}
-          </Alert>
-          <Alert  variant='dark'>
-                    TURN : PLAYER  {game && game.gameState.turn.substr(1)}
-          </Alert>
+      <div className="col-5">
+         <div>
+
+          <div className="container">
+          <Messages messages={messages} name={'name'} />
+          <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
+          </div>
+
+
             <>
               <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
@@ -211,31 +213,31 @@ const PlayerCard = (props) => {
           </div>
 
 
-
-        }
-
-
           </div>
           <div className="col">
 
-      {game &&  < GameTable  onTableCardsData={game.gameState.playerTableCards[player_id]} PlayerUsername={game.gameState.playerTableUsernames[player_id]} /> }
+      {game &&  < GameTable suitCode={game.gameState.suit} onTableCardsData={game.gameState.playerTableCards[player_id]} PlayerUsername={game.gameState.playerTableUsernames[player_id]} /> }
 
           </div>
-          <div className="col">
+          <div className="col-3">
          {stats && game &&
-          <Scoreboard scores={game.gameState.gameScores} usernames={game.playerName} doContinue={doContinue} isActive={game.playerActive} breCount={breCount} cardPassed={game.gameState.cardPassed}/>
+          <Scoreboard scores={game.gameState.gameScores} usernames={game.playerName}
+               doContinue={doContinue} isActive={game.playerActive}
+               breCount={breCount} cardPassed={game.gameState.cardPassed}
+               lastRoundCards={game.gameState.lastRoundCards}
+               turn={game.gameState.turn}/>
 
           }
            </div>
       </div>
       <div className="row">
       <Container> <Row>
-        {game && game.gameState.cards[player_id].sort(function(a, b){return a - b}).map(card => <PlayingCard code={card} isPicked={(selectedCards.indexOf(card) === -1) ? false : true } {...selectProps}  />)}
+        {game && game.gameState.cards[player_id].sort(function(a, b){return a - b}).map((card,index) => <PlayingCard key={index} code={card} isPicked={(selectedCards.indexOf(card) === -1) ? false : true } {...selectProps}  />)}
 
       </Row><br></br>
       <Row>
         {/* {console.log('see these : ',doRefresh ,isStarted , isPassed , (playerTurn === player_id))} */}
-        {game && (game.gameState.turn == player_id || game.gameState.isCardPassed == false) &&
+        {game && (game.gameState.turn === player_id || game.gameState.isCardPassed === false) &&
           (game.gameState.cards[player_id].length > 0) &&
           (isPassed ?
           <Button style={{position: 'fixed' ,bottom:'20px', left: '200px'}}
@@ -258,11 +260,25 @@ const PlayerCard = (props) => {
             Refresh
           </Button>
 
-          <Button style={{position: 'fixed' ,bottom:'20px', left: '800px'}}
+          {/* <Button style={{position: 'fixed' ,bottom:'20px', left: '500px'}}
+             disabled variant="info">
+            {game && game.playerName[game.playerId[game.gameState.turn]]}'s Turn'
+          </Button> */}
+          <Button style={{position: 'fixed' ,bottom:'20px', left: '600px'}}
+             disabled variant="info">
+            { game && game.gamePlayed } / {game && game.gameState.round}
+          </Button>
+
+          <Button style={{position: 'fixed' ,bottom:'20px', left: '700px'}}
+             disabled variant="info">
+            {game && game.gameState.state}
+          </Button>
+
+          <Button style={{position: 'fixed' ,bottom:'20px', left: '900px'}}
             variant="secondary" onClick={renewGame}>
             {'Renew'}
           </Button>
-          <Button style={{position: 'fixed' ,bottom:'20px', left: '900px'}}
+          <Button style={{position: 'fixed' ,bottom:'20px', left: '1000px'}}
             variant="secondary" onClick={logOutGame}>
             {'Logout'}
           </Button>

@@ -4,7 +4,6 @@ import Dashboard from './Containers/Dashboard';
 
 const App = () => {
   return (
-
     <Dashboard />
   );
 }
